@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="RiffRig Deals share graphic">
+  <rect width="1200" height="630" fill="#17130f"/>
+  <circle cx="96" cy="96" r="18" fill="#f0a202"/>
+  <text x="132" y="108" fill="#ffd89a" font-family="Georgia, serif" font-size="28" letter-spacing="4">RIFFRIG DEALS</text>
+  <text x="72" y="320" fill="#f4ecdf" font-family="Georgia, serif" font-size="72">Prices we have actually checked.</text>
+  <text x="72" y="400" fill="#cbbba6" font-family="Georgia, serif" font-size="32">Guitar plugins across genres. Metal is a filter.</text>
+  <path d="M72 500c80-40 120-40 200 0s120 40 200 0 120-40 200 0 120 40 200 0" fill="none" stroke="#f0a202" stroke-width="4"/>
+</svg>
