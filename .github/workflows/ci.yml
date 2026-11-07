@@ -18,6 +18,20 @@ jobs:
     name: lint, typecheck, test, build
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: riffrig
+          POSTGRES_PASSWORD: riffrig
+          POSTGRES_DB: riffrig
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U riffrig -d riffrig"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,3 +62,49 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: "1"
           ALLOW_SEARCH_INDEXING: "false"
+
+      # Disposable CI database only. This password is not a production secret.
+      - name: Release and boot the standalone server
+        env:
+          DATABASE_URL: postgres://riffrig:riffrig@127.0.0.1:5432/riffrig
+          ADMIN_TOKEN: ci-admin-token-not-secret
+          UNSUBSCRIBE_SECRET: ci-unsubscribe-secret-xx
+          ALLOW_SEARCH_INDEXING: "false"
+          PORT: "3456"
+        run: |
+          set -euo pipefail
+          npm run release
+          npm run release
+          node --input-type=module -e '
+            import pg from "pg";
+            const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+            await client.connect();
+            const entries = await client.query("SELECT COUNT(*)::int AS n FROM entries");
+            const signups = await client.query("SELECT COUNT(*)::int AS n FROM signups");
+            if (entries.rows[0].n < 30) process.exit(1);
+            if (signups.rows[0].n !== 0) process.exit(1);
+            console.log(JSON.stringify({ entries: entries.rows[0].n, signups: signups.rows[0].n }));
+            await client.end();
+          '
+          node scripts/serve.mjs > /tmp/riffrig-server.log 2>&1 &
+          echo $! > /tmp/riffrig-server.pid
+          for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+            if curl -sf http://127.0.0.1:3456/api/health > /tmp/riffrig-health.json; then
+              break
+            fi
+            sleep 1
+          done
+          test -s /tmp/riffrig-health.json
+          kill "$(cat /tmp/riffrig-server.pid)" || true
+          python3 - << 'PY'
+          import json
+          health = json.load(open("/tmp/riffrig-health.json"))
+          assert health["ok"] is True
+          assert health["ready"] is True
+          assert health["persistence"] == "postgres"
+          assert health["leadmail"] == "disabled"
+          log = open("/tmp/riffrig-server.log").read()
+          assert "seed_applied" in log
+          assert "next start" not in log
+          print(json.dumps({"health": health, "seed_logged": True}))
+          PY

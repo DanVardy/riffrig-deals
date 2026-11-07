@@ -28,8 +28,9 @@ npm test
 npm run lint
 npm run typecheck
 npm run build
+npm run release      # migrate, then insert any missing catalogue rows
 npm run migrate      # needs DATABASE_URL
-npm run seed         # needs DATABASE_URL; re-seed resets deal flags from data/catalogue.json
+npm run seed         # needs DATABASE_URL; existing rows and subscriber data are left as they are
 ```
 
 Environment placeholders live in `.env.example`. Do not commit real tokens.

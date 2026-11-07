@@ -20,10 +20,12 @@ Nothing in this runbook has been deployed, purchased, or emailed. Public launch 
 1. Create the Railway project, app service, and Postgres yourself when you are ready. This workspace did not.
 2. Set `DATABASE_URL`, `DATABASE_SSL`, `ADMIN_TOKEN`, and `UNSUBSCRIBE_SECRET`. Tokens must be at least 16 characters. Generate them locally. Never prefix them with `NEXT_PUBLIC`.
 3. Set `NEXT_PUBLIC_SITE_URL` to the public origin before building, so canonical links and the sitemap match.
-4. `npm run migrate` then `npm run seed`.
-5. Re-running seed copies `data/catalogue.json` over existing slugs, including `active_deal`. Do not re-seed after a manual sale verification unless the file matches.
+4. `npm run release` migrates, then inserts catalogue rows that are not already there. `npm start` does the same release before it listens, so a pre-deploy that only migrates still loads the catalogue on boot.
+5. Seed uses `ON CONFLICT (slug) DO NOTHING`. It does not update an existing entry, and it does not write signups, submissions, enquiries, sponsors, or error rows. A second release logs `inserted: 0` and the same `databaseMatches` count. The process exits non-zero if the database does not contain every catalogue slug.
 
-`npm start` is the production process (`scripts/serve.mjs`). With no `DATABASE_URL` it answers 503 for every page and API, including `/api/health`, and does not serve the preview catalogue. Health is fully ready only when the database URL, admin token, and unsubscribe secret are all set. The health body does not list secret values. Railway’s health check stays on `/api/health`, so a deploy without the database does not go ready.
+`npm start` runs `scripts/serve.mjs`. When `DATABASE_URL` is set it runs `npm run release` and exits if that fails. It then starts `node .next/standalone/server.js`, which is the server Next builds for `output: "standalone"`. The previous starter called `next()` directly, and Next logs that path as incompatible with standalone. With no `DATABASE_URL`, startup skips the release and the app still fail-closes. Health is fully ready only when the database URL, admin token, and unsubscribe secret are all set. The health body does not list secret values. Railway’s health check stays on `/api/health`, so a deploy without the database does not go ready.
+
+`railway.toml` asks for the Dockerfile builder, `preDeployCommand = ["npm run release"]`, and `startCommand = "npm run start"`. Railway’s docs say config-as-code overrides the dashboard only when that file is applied, and new services cannot opt into config-as-code. The preview that was already deployed was built with Railpack, so this file was not what that deployment used. If a later deploy still ignores the file, set the service start command to `npm run start` and the pre-deploy command to `npm run release`. Do not start it with `next start`.
 
 ## Admin API
 
