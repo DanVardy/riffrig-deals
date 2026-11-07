@@ -1,31 +1,56 @@
-import { createServer } from "http";
-import { parse } from "url";
-import next from "next";
-import { blockedBody, blockedHtml, productionBlocked } from "../lib/production-gate.mjs";
+import { spawn } from "child_process";
+import fs from "fs";
+import path from "path";
 
-process.env.NODE_ENV ||= "production";
-const port = Number(process.env.PORT || 3000);
-const app = next({ dev: false, hostname: "0.0.0.0", port });
-const handle = app.getRequestHandler();
+const root = process.cwd();
 
-await app.prepare();
-createServer((req, res) => {
-  const pathname = (req.url || "/").split("?")[0] || "/";
-  if (process.env.ALLOW_SEARCH_INDEXING !== "true") {
-    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+function runNode(script) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [path.join(root, script)], { stdio: "inherit", env: process.env });
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`${script} exited ${code ?? 1}`));
+    });
+  });
+}
+
+if (process.env.DATABASE_URL) {
+  try {
+    await runNode("scripts/release.mjs");
+  } catch {
+    console.error(JSON.stringify({ code: "startup_release_failed" }));
+    process.exit(1);
   }
-  if (productionBlocked()) {
-    res.statusCode = 503;
-    res.setHeader("cache-control", "no-store");
-    const body = blockedBody(pathname);
-    if (body) {
-      res.setHeader("content-type", "application/json; charset=utf-8");
-      res.end(JSON.stringify(body));
-      return;
-    }
-    res.setHeader("content-type", "text/html; charset=utf-8");
-    res.end(blockedHtml);
-    return;
-  }
-  handle(req, res, parse(req.url || "/", true));
-}).listen(port, "0.0.0.0");
+}
+
+const standalone = path.join(root, ".next", "standalone");
+const serverJs = path.join(standalone, "server.js");
+if (!fs.existsSync(serverJs)) {
+  console.error(JSON.stringify({ code: "standalone_server_missing" }));
+  process.exit(1);
+}
+
+fs.cpSync(path.join(root, ".next", "static"), path.join(standalone, ".next", "static"), { recursive: true });
+const publicDir = path.join(root, "public");
+if (fs.existsSync(publicDir)) {
+  fs.cpSync(publicDir, path.join(standalone, "public"), { recursive: true });
+}
+
+const server = spawn(process.execPath, ["server.js"], {
+  cwd: standalone,
+  stdio: "inherit",
+  env: {
+    ...process.env,
+    NODE_ENV: "production",
+    HOSTNAME: "0.0.0.0",
+  },
+});
+
+function stop(signal) {
+  server.kill(signal);
+}
+
+process.on("SIGTERM", () => stop("SIGTERM"));
+process.on("SIGINT", () => stop("SIGINT"));
+server.on("exit", (code) => process.exit(code ?? 1));
