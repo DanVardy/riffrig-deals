@@ -77,6 +77,14 @@ Until that flag is true, signup stores a pending row and does not call Leadmail.
 
 Introductory offer: A$25 per week for a labelled site line and a Friday line in a sold week. The sponsor page shows “unavailable” in the preview and measured totals (including honest zeros) once Postgres is connected. `/go/<slug>` redirects only to the stored https URL of the sponsor with a sold week covering today, then adds to the daily click total. It ignores any `url` query parameter.
 
+## Search indexing
+
+Prelaunch default: crawlers are blocked. `ALLOW_SEARCH_INDEXING` must be the exact string `true` before that changes. Set it in the environment used for `npm run build` (so the `X-Robots-Tag` header is omitted) and in the running process (so page metadata and `/robots.txt` allow indexing). Any other value, including empty, keeps `noindex, nofollow`, a robots file that disallows `/`, and the header. CI sets the flag to `false` and does not index anything.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on pull requests and on pushes to `main`. It checks out the repo, installs with `npm ci` on Node 22, then runs lint, typecheck, tests, and the production build. Permissions are `contents: read`. No `DATABASE_URL`, admin token, unsubscribe secret, or Leadmail key is required. During `next build`, Next sets `NEXT_PHASE=phase-production-build`, and the app treats that phase as the preview catalogue when Postgres is not configured.
+
 ## Still closed
 
 - No Railway project, database, domain, or variables were created.

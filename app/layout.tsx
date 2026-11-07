@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fraunces, Outfit } from "next/font/google";
 import { PageviewBeacon, SponsorBar } from "@/components/chrome";
+import { publicRobots } from "@/lib/indexing";
 import { getRuntime } from "@/lib/runtime";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
@@ -28,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: ["/opengraph-image"],
     },
     twitter: { card: "summary_large_image", title: "RiffRig Deals", description, images: ["/opengraph-image"] },
-    robots: { index: true, follow: true },
+    robots: publicRobots(),
   };
 }
 

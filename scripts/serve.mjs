@@ -11,6 +11,9 @@ const handle = app.getRequestHandler();
 await app.prepare();
 createServer((req, res) => {
   const pathname = (req.url || "/").split("?")[0] || "/";
+  if (process.env.ALLOW_SEARCH_INDEXING !== "true") {
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  }
   if (productionBlocked()) {
     res.statusCode = 503;
     res.setHeader("cache-control", "no-store");

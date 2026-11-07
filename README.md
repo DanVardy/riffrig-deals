@@ -15,6 +15,10 @@ This repo is a Next.js app meant to run on Railway with Postgres. Email, when it
 
 `npm run dev` is a database-less preview: the catalogue renders, and the banner says submissions, signups, and enquiries are not saved. Production without `DATABASE_URL` fails closed instead of pretending those writes succeeded.
 
+Search indexing is off until `ALLOW_SEARCH_INDEXING=true`. That flag has to be set for the production build and for the running process. Until then, pages send `noindex`, `/robots.txt` disallows the site, and responses include `X-Robots-Tag: noindex, nofollow`.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs `npm ci`, then lint, typecheck, tests, and `npm run build` on pull requests and pushes to `main`. The build does not need a database or any secret: `next build` sets `NEXT_PHASE=phase-production-build`, so a missing `DATABASE_URL` stays on the preview catalogue.
+
 ## Scripts
 
 ```bash
