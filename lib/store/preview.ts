@@ -18,6 +18,9 @@ export const previewStore: Store = {
   async createEntry() {
     refuse();
   },
+  async updateEntryPrice() {
+    refuse();
+  },
   async insertSubmission() {
     refuse();
   },

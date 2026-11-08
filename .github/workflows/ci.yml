@@ -86,6 +86,7 @@ jobs:
             console.log(JSON.stringify({ entries: entries.rows[0].n, signups: signups.rows[0].n }));
             await client.end();
           '
+          npx vitest run tests/admin-price-db.test.ts
           node scripts/serve.mjs > /tmp/riffrig-server.log 2>&1 &
           echo $! > /tmp/riffrig-server.pid
           for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do

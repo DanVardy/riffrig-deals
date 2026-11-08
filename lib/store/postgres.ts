@@ -5,6 +5,12 @@ import type { Store } from "./types";
 
 let pool: Pool | null = null;
 
+export async function closePostgresForTests(): Promise<void> {
+  if (process.env.NODE_ENV !== "test" || !pool) return;
+  await pool.end();
+  pool = null;
+}
+
 function getPool(): Pool {
   if (!pool) {
     pool = new Pool({
@@ -50,6 +56,7 @@ function mapEntry(row: QueryResultRow): Entry {
     priceVerifiedAt: iso(row.price_verified_at),
     sourceCheckedAt: iso(row.source_checked_at),
     sourceNote: row.source_note == null ? null : String(row.source_note),
+    priceSourceUrl: row.price_source_url == null ? null : String(row.price_source_url),
     saleAmount: num(row.sale_amount),
     saleCurrency: row.sale_currency == null ? null : String(row.sale_currency),
     saleVerifiedAt: iso(row.sale_verified_at),
@@ -100,7 +107,8 @@ function mapSponsor(row: QueryResultRow): Sponsor {
 
 const ENTRY_COLUMNS = `slug, vendor, name, category, summary, official_url, genre_tags, os_formats,
   price_status, price_amount, price_currency, price_summary, price_verified_at, source_checked_at,
-  source_note, sale_amount, sale_currency, sale_verified_at, sale_expires_at, sale_expiry_unknown, active_deal`;
+  source_note, sale_amount, sale_currency, sale_verified_at, sale_expires_at, sale_expiry_unknown, active_deal,
+  price_source_url`;
 
 export function getPostgresStore(): Store {
   const db = getPool();
@@ -119,7 +127,7 @@ export function getPostgresStore(): Store {
     async createEntry(entry) {
       await db.query(
         `INSERT INTO entries (${ENTRY_COLUMNS})
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)`,
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
         [
           entry.slug,
           entry.vendor,
@@ -142,8 +150,55 @@ export function getPostgresStore(): Store {
           entry.saleExpiresAt,
           entry.saleExpiryUnknown,
           entry.activeDeal,
+          entry.priceSourceUrl,
         ],
       );
+    },
+    async updateEntryPrice(slug, fields, expectedUpdatedAt) {
+      const result = await db.query(
+        `UPDATE entries SET
+           price_status = $2,
+           price_amount = $3,
+           price_currency = $4,
+           price_summary = $5,
+           price_verified_at = $6,
+           source_checked_at = $7,
+           source_note = $8,
+           price_source_url = $9,
+           sale_amount = $10,
+           sale_currency = $11,
+           sale_verified_at = $12,
+           sale_expires_at = $13,
+           sale_expiry_unknown = $14,
+           active_deal = $15,
+           updated_at = now()
+         WHERE slug = $1
+           AND ($16::text IS NULL OR updated_at = $16::timestamptz)
+         RETURNING updated_at`,
+        [
+          slug,
+          fields.priceStatus,
+          fields.priceAmount,
+          fields.priceCurrency,
+          fields.priceSummary,
+          fields.priceVerifiedAt,
+          fields.sourceCheckedAt,
+          fields.sourceNote,
+          fields.priceSourceUrl,
+          fields.saleAmount,
+          fields.saleCurrency,
+          fields.saleVerifiedAt,
+          fields.saleExpiresAt,
+          fields.saleExpiryUnknown,
+          fields.activeDeal,
+          expectedUpdatedAt,
+        ],
+      );
+      if (result.rowCount) {
+        return { status: "ok", updatedAt: iso(result.rows[0]?.updated_at) ?? new Date().toISOString() };
+      }
+      const existing = await db.query("SELECT 1 FROM entries WHERE slug = $1", [slug]);
+      return existing.rowCount ? { status: "conflict" } : { status: "missing" };
     },
     async insertSubmission(input) {
       const result = await db.query(

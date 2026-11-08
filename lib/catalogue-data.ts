@@ -30,6 +30,7 @@ function asEntry(value: unknown, index: number): Entry {
     priceVerifiedAt: row.priceVerifiedAt == null ? null : String(row.priceVerifiedAt),
     sourceCheckedAt: row.sourceCheckedAt == null ? null : String(row.sourceCheckedAt),
     sourceNote: row.sourceNote == null ? null : String(row.sourceNote),
+    priceSourceUrl: row.priceSourceUrl == null ? null : String(row.priceSourceUrl),
     saleAmount: typeof row.saleAmount === "number" ? row.saleAmount : null,
     saleCurrency: row.saleCurrency == null ? null : String(row.saleCurrency),
     saleVerifiedAt: row.saleVerifiedAt == null ? null : String(row.saleVerifiedAt),

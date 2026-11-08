@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { filterEntries } from "@/lib/filter";
-import { publicPrice } from "@/lib/price";
+import { expiryLabel, isVerifiedSale, publicPrice } from "@/lib/price";
 import { CATEGORY_LABELS, type Category, type Entry } from "@/lib/types";
 
 type Props = {
@@ -113,6 +113,7 @@ export function CatalogueBrowser({ entries, initialQuery, initialCategory, initi
                 <p className="summary">{entry.summary}</p>
                 <div className="row">
                   <span className={`pill${price.verified ? (price.label === "Free" ? " free" : " checked") : ""}`}>{price.label}</span>
+                  {isVerifiedSale(entry) ? <span className="pill checked">Sale · {expiryLabel(entry)}</span> : null}
                   {entry.genreTags.map((tag) => (
                     <span className="pill" key={tag}>{tag}</span>
                   ))}

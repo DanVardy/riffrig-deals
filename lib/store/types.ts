@@ -1,10 +1,17 @@
+import type { PriceFields } from "../price-update";
 import type { EnquiryInput, Entry, LeadmailSync, SearchMiss, Signup, Sponsor, Submission } from "../types";
+
+export type PriceUpdateResult =
+  | { status: "ok"; updatedAt: string }
+  | { status: "missing" }
+  | { status: "conflict" };
 
 export interface Store {
   kind: "memory" | "postgres" | "preview";
   listEntries(): Promise<Entry[]>;
   getEntry(slug: string): Promise<Entry | null>;
   createEntry(entry: Entry): Promise<void>;
+  updateEntryPrice(slug: string, fields: PriceFields, expectedUpdatedAt: string | null): Promise<PriceUpdateResult>;
   insertSubmission(input: Omit<Submission, "id" | "createdAt" | "status" | "reviewNote">): Promise<Submission>;
   listPendingSubmissions(): Promise<Submission[]>;
   getSubmission(id: string): Promise<Submission | null>;
