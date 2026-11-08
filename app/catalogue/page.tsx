@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { CatalogueBrowser } from "@/components/catalogue-browser";
+import { parseDeal, parseSort } from "@/lib/catalogue-query";
 import { getRuntime } from "@/lib/runtime";
 import { one, readQuery, type SearchParams } from "@/lib/page-query";
 
 export const metadata: Metadata = {
-  title: "Catalogue",
-  description: "Search amp sims, effects, cabinet impulse responses, and guitar recording tools. Unverified prices are not shown.",
+  title: "All plugins",
+  description: "Search amp sims, effects, cabinet impulse responses, and guitar recording tools. Unverified prices are not shown as deals.",
 };
 
 export default async function CataloguePage({ searchParams }: { searchParams: Promise<SearchParams> }) {
@@ -15,10 +16,19 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
   const query = await readQuery(searchParams);
   return (
     <main id="content" className="wrap">
-      <p className="kicker">Catalogue</p>
-      <h1>Find a plugin</h1>
-      <p className="lede">Individual products only. Vendor shop windows are not listed as if they were one plugin.</p>
-      <CatalogueBrowser entries={entries} initialQuery={one(query.q)} initialCategory={one(query.category)} initialGenre={one(query.genre)} />
+      <h1>All plugins</h1>
+      <p className="lede prose">Individual products only. Shop windows are not listed as if they were one plugin. Prices stay blank until they are checked.</p>
+      <CatalogueBrowser
+        entries={entries}
+        initial={{
+          q: one(query.q),
+          category: one(query.category),
+          genre: one(query.genre),
+          vendor: one(query.vendor),
+          deal: parseDeal(one(query.deal)),
+          sort: parseSort(one(query.sort)),
+        }}
+      />
     </main>
   );
 }

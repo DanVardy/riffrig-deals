@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PluginCard } from "@/components/plugin-card";
 import { verifiedDeals } from "@/lib/filter";
-import { publicPrice } from "@/lib/price";
 import { getRuntime } from "@/lib/runtime";
 
 export const metadata: Metadata = {
-  title: "Verified sales",
-  description: "Current guitar-plugin sales that were checked on the vendor's own page. Empty when none are verified.",
+  title: "Verified deals",
+  description: "Guitar plugin sales checked on the seller’s own page. Empty when none are verified.",
 };
 
 export default async function DealsPage() {
@@ -15,22 +15,19 @@ export default async function DealsPage() {
   const deals = verifiedDeals(await runtime.store.listEntries());
   return (
     <main id="content" className="wrap">
-      <p className="kicker">Verified sales</p>
-      <h1>Current deals</h1>
+      <h1>Verified deals</h1>
+      <p className="lede prose">Only sales confirmed on the seller’s page. A sale with no published end date is labelled “expiry unknown”.</p>
       {deals.length === 0 ? (
-        <section className="empty">
-          <p>No verified sales right now.</p>
-          <p>A listing needs a sale price confirmed on the vendor’s own page. If that page has no end date, the sale can still be listed and is labelled “expiry unknown”. Machine-read prices, historic lows, and guessed discounts are not published.</p>
-          <p><Link href="/catalogue">Browse the catalogue anyway</Link></p>
-        </section>
+        <div className="empty">
+          <p>No verified deals right now.</p>
+          <Link className="button" href="/catalogue">Browse all plugins</Link>
+        </div>
       ) : (
-        <ul className="deal-list">
+        <div className="deal-grid">
           {deals.map((entry) => (
-            <li key={entry.slug}>
-              <Link href={`/plugins/${entry.slug}`}>{entry.name}: {publicPrice(entry).label}. {publicPrice(entry).detail}</Link>
-            </li>
+            <PluginCard key={entry.slug} entry={entry} returnTo="/deals" />
           ))}
-        </ul>
+        </div>
       )}
     </main>
   );
