@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PluginArt } from "@/components/plugin-art";
 import { safeReturnPath } from "@/lib/catalogue-query";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { publicPrice, expiryLabel, isVerifiedSale } from "@/lib/price";
@@ -45,10 +46,7 @@ export default async function PluginPage({
         <div>
           <p className="meta">{CATEGORY_LABELS[entry.category]} · {entry.vendor}</p>
           <h1>{entry.name}</h1>
-          <div className="card-art" aria-hidden="true">
-            <p className="meta">{entry.vendor}</p>
-            <p>{entry.name}</p>
-          </div>
+          <PluginArt slug={entry.slug} name={entry.name} vendor={entry.vendor} />
           <p className="lede">{entry.summary}</p>
           <dl className="facts">
             <div>

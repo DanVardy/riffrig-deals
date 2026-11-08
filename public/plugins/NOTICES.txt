@@ -1,0 +1,46 @@
+Local plugin images and the statements found with them.
+These notes record what the source said. They are not a separate licence grant.
+
+Audacity logo (audacity.svg)
+Source page: https://github.com/audacity/audacity/blob/master/images/Audacity_Logo_large.svg
+Asset: https://raw.githubusercontent.com/audacity/audacity/master/images/Audacity_Logo_large.svg
+The file is the unmodified upstream SVG. Its own metadata says:
+  cc:license "GPL v2 or later"
+  dc:rights "Audacity development team"
+  dc:creator "Aaron Spike"
+  dc:date "2009-06-14"
+The Audacity repository LICENSE.txt says the project is released under GPLv3,
+and that an individual file may state another licence. This file states GPL v2 or later.
+The full GPL text is in that repository LICENSE.txt.
+The Audacity name and logo may also be a trademark. Use here identifies the
+product and does not claim that the Audacity project endorses this site.
+
+Neural Amp Modeler icon (neural-amp-modeler.webp)
+Source page: https://github.com/sdatkinson/NeuralAmpModelerPlugin
+Asset: https://raw.githubusercontent.com/sdatkinson/NeuralAmpModelerPlugin/master/NeuralAmpModeler/resources/Images.xcassets/AppIcon.appiconset/icon_512x512.png
+The repository LICENSE file is the MIT License below. No separate image licence
+was found. The WebP in this folder is a 512 by 512 re-encode of that official
+application icon so the site does not hotlink the repository. It is the app
+icon, not a full plugin-interface screenshot.
+
+MIT License
+
+Copyright (c) 2022 Steven Atkinson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

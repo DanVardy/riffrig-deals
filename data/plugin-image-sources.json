@@ -1,0 +1,26 @@
+{
+  "audacity": {
+    "file": "public/plugins/audacity.svg",
+    "src": "/plugins/audacity.svg",
+    "width": 512,
+    "height": 512,
+    "alt": "Audacity logo: blue headphones over a yellow and red sound wave",
+    "sourcePage": "https://github.com/audacity/audacity/blob/master/images/Audacity_Logo_large.svg",
+    "assetUrl": "https://raw.githubusercontent.com/audacity/audacity/master/images/Audacity_Logo_large.svg",
+    "usageStatement": "The SVG metadata states cc:license GPL v2 or later, dc:rights Audacity development team, dc:creator Aaron Spike, dc:date 2009-06-14. The repository LICENSE.txt says Audacity is released under GPLv3 and that an individual file may state another licence. This file states GPL v2 or later. No separate permission to use the logo as a trademark was found.",
+    "match": "Project logo shipped in the current Audacity source tree. It is the long-standing headphones logo, not a screenshot of a particular editor release.",
+    "servedAs": "Unmodified official SVG."
+  },
+  "neural-amp-modeler": {
+    "file": "public/plugins/neural-amp-modeler.webp",
+    "src": "/plugins/neural-amp-modeler.webp",
+    "width": 512,
+    "height": 512,
+    "alt": "Neural Amp Modeler application icon, a dark rounded square labelled NAM",
+    "sourcePage": "https://github.com/sdatkinson/NeuralAmpModelerPlugin",
+    "assetUrl": "https://raw.githubusercontent.com/sdatkinson/NeuralAmpModelerPlugin/master/NeuralAmpModeler/resources/Images.xcassets/AppIcon.appiconset/icon_512x512.png",
+    "usageStatement": "The repository LICENSE file is the MIT License, Copyright (c) 2022 Steven Atkinson. No separate image licence was found. The MIT notice is copied in public/plugins/NOTICES.txt.",
+    "match": "Application icon from the official Neural Amp Modeler plugin repository. It is the app icon, not a full plugin-interface screenshot.",
+    "servedAs": "Local WebP, 512 by 512, re-encoded from the official PNG. The page does not hotlink the repository."
+  }
+}

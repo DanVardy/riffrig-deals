@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PluginArt } from "@/components/plugin-art";
 import { CATEGORY_LABELS } from "@/lib/types";
 import type { Entry } from "@/lib/types";
 import { expiryLabel, isVerifiedSale, publicPrice } from "@/lib/price";
@@ -23,10 +24,7 @@ export function PluginCard({ entry, returnTo }: { entry: Entry; returnTo: string
   const status = sale ? `Verified deal. ${expiryLabel(entry)}` : price.label === "Free" ? "Free" : price.verified ? "Verified price" : "No verified current deal";
   return (
     <article className="card">
-      <div className="card-art">
-        <p className="meta">{entry.vendor}</p>
-        <p>{entry.name}</p>
-      </div>
+      <PluginArt slug={entry.slug} name={entry.name} vendor={entry.vendor} />
       <p className="meta">{CATEGORY_LABELS[entry.category]} · {entry.vendor}</p>
       <h2>{entry.name}</h2>
       <p className="summary">{entry.summary}</p>
