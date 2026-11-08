@@ -50,6 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Image src="/brand/guitar-plugin-deals-logo.png" width={255} height={80} alt="Guitar Plugin Deals" priority />
                 </Link>
                 <nav className="nav-primary" aria-label="Primary">
+                  <Link href="/free">Free</Link>
                   <Link href="/deals">Deals</Link>
                   <Link href="/catalogue">All plugins</Link>
                 </nav>
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <footer className="site-footer">
               <div className="footer-inner">
                 <nav className="footer-links" aria-label="More">
+                  <Link href="/free">Free</Link>
                   <Link href="/deals">Deals</Link>
                   <Link href="/catalogue">All plugins</Link>
                   <Link href="/newsletter">Friday letter</Link>

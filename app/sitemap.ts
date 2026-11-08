@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl().origin;
-  const staticPaths = ["", "/catalogue", "/deals", "/submit", "/newsletter", "/sponsors"];
+  const staticPaths = ["", "/free", "/catalogue", "/deals", "/submit", "/newsletter", "/sponsors"];
   const runtime = getRuntime();
   const entries = runtime.mode === "fail-closed" ? [] : await runtime.store.listEntries();
   return [
