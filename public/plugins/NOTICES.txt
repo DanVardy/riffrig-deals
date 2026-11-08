@@ -1,6 +1,9 @@
 Local plugin images and the statements found with them.
 These notes record what the source said. They are not a separate licence grant.
 
+Vendor product images
+Most files in this folder are the vendor's own product image, copied from the public product page named in data/plugin-image-sources.json. No reuse licence was stated on those pages, and none is asserted here. Copyright remains with the vendor. Each record has the source page, the asset URL, and a match note. A missing open-source licence is not recorded as a ban.
+
 Audacity logo (audacity.svg)
 Source page: https://github.com/audacity/audacity/blob/master/images/Audacity_Logo_large.svg
 Asset: https://raw.githubusercontent.com/audacity/audacity/master/images/Audacity_Logo_large.svg
