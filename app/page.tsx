@@ -15,18 +15,25 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   return (
     <main id="content" className="wrap">
       {RESULT_COPY[result] ? <p className={`notice ${result === "not_saved" || result === "invalid" ? "error" : "ok"}`}>{RESULT_COPY[result]}</p> : null}
-      <div className="home-intro">
-        <h1>Find guitar plugins. Check the deal before you buy.</h1>
-        <p className="lede prose">Search the catalogue, then read the seller’s own price before you decide. Metal is a filter, not the whole list.</p>
+      <section className="hero" aria-labelledby="home-title">
+        <h1 id="home-title">Build your guitar setup for free.</h1>
+        <p className="lede prose">Start with a free recorder or DAW, then add an amp, a cabinet, and effects. Come back for the next useful free tool. Paid deals stay available when you want them.</p>
+        <div className="actions">
+          <Link className="button primary" href="/free">Browse free software</Link>
+          <Link className="button" href="/deals">See verified deals</Link>
+        </div>
         <form className="search" action="/catalogue" method="get" role="search">
-          <label htmlFor="home-search">Search plugins</label>
+          <label htmlFor="home-search">Search the full catalogue</label>
           <input id="home-search" className="text-input" name="q" placeholder="Name, developer, or description" />
         </form>
-        <div className="actions">
-          <Link className="button primary" href="/deals">Browse verified deals</Link>
-          <Link href="/catalogue">Browse all plugins</Link>
-        </div>
-      </div>
+      </section>
+      <nav className="stage-links" aria-label="Free setup steps">
+        <Link href="/free?stage=host">Record and host</Link>
+        <Link href="/free?stage=amp">Amps</Link>
+        <Link href="/free?stage=cabinet">Cabinets and IRs</Link>
+        <Link href="/free?stage=effects">Effects</Link>
+        <Link href="/free?stage=capture">Capture and models</Link>
+      </nav>
       <section className="section" aria-label="Verified deals">
         <h2>Verified deals</h2>
         {deals.length === 0 ? (
