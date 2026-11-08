@@ -6,7 +6,8 @@ export function createMemoryStore(
   entries: Entry[] = [],
   seed: { sponsors?: Sponsor[]; soldSponsorIds?: string[] } = {},
 ): Store {
-  const entryRows = entries.map((entry) => ({ ...entry, genreTags: [...entry.genreTags] }));
+  const entryRows = entries.map((entry) => ({ ...entry, genreTags: [...entry.genreTags], priceSourceUrl: entry.priceSourceUrl ?? null }));
+  const updatedAts = new Map<string, string>(entryRows.map((entry) => [entry.slug, "2026-01-01T00:00:00.000Z"]));
   const submissions: Submission[] = [];
   const signups: Signup[] = [];
   const misses: SearchMiss[] = [];
@@ -30,7 +31,20 @@ export function createMemoryStore(
       return found ? { ...found, genreTags: [...found.genreTags] } : null;
     },
     async createEntry(entry) {
-      entryRows.push({ ...entry, genreTags: [...entry.genreTags] });
+      entryRows.push({ ...entry, genreTags: [...entry.genreTags], priceSourceUrl: entry.priceSourceUrl ?? null });
+      updatedAts.set(entry.slug, new Date().toISOString());
+    },
+    async updateEntryPrice(slug, fields, expectedUpdatedAt) {
+      const row = entryRows.find((entry) => entry.slug === slug);
+      if (!row) return { status: "missing" };
+      const current = updatedAts.get(slug) ?? "2026-01-01T00:00:00.000Z";
+      if (expectedUpdatedAt && new Date(expectedUpdatedAt).getTime() !== new Date(current).getTime()) {
+        return { status: "conflict" };
+      }
+      Object.assign(row, fields);
+      const updatedAt = new Date().toISOString();
+      updatedAts.set(slug, updatedAt);
+      return { status: "ok", updatedAt };
     },
     async insertSubmission(input) {
       const row: Submission = { ...input, id: randomUUID(), createdAt: new Date().toISOString(), status: "pending", reviewNote: null };

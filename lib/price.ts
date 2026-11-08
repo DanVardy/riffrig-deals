@@ -26,23 +26,19 @@ export function expiryLabel(entry: Entry): string | null {
 export type PublicPrice = {
   label: string;
   detail: string;
+  listLabel: string | null;
+  checkedLabel: string | null;
   verified: boolean;
 };
 
 export function publicPrice(entry: Entry): PublicPrice {
   if (entry.priceStatus === "verified_free" && entry.priceVerifiedAt) {
-    return {
-      label: "Free",
-      detail: `Checked ${formatChecked(entry.priceVerifiedAt)}`,
-      verified: true,
-    };
+    const checked = `Checked ${formatChecked(entry.priceVerifiedAt)}`;
+    return { label: "Free", detail: checked, listLabel: null, checkedLabel: checked, verified: true };
   }
   if (entry.priceStatus === "verified_list" && entry.priceVerifiedAt && entry.priceSummary) {
-    return {
-      label: "Price checked",
-      detail: entry.priceSummary,
-      verified: true,
-    };
+    const checked = `Checked ${formatChecked(entry.priceVerifiedAt)}`;
+    return { label: "Price checked", detail: `${entry.priceSummary} ${checked}`, listLabel: null, checkedLabel: checked, verified: true };
   }
   if (
     entry.priceStatus === "verified_list" &&
@@ -50,23 +46,22 @@ export function publicPrice(entry: Entry): PublicPrice {
     entry.priceAmount != null &&
     entry.priceCurrency
   ) {
-    return {
-      label: formatMoney(entry.priceAmount, entry.priceCurrency),
-      detail: `List price checked ${formatChecked(entry.priceVerifiedAt)}`,
-      verified: true,
-    };
+    const checked = `Checked ${formatChecked(entry.priceVerifiedAt)}`;
+    const label = formatMoney(entry.priceAmount, entry.priceCurrency);
+    return { label, detail: `List price ${label}. ${checked}`, listLabel: label, checkedLabel: checked, verified: true };
   }
   if (isVerifiedSale(entry)) {
-    return {
-      label: formatMoney(entry.saleAmount as number, entry.saleCurrency as string),
-      detail: `${expiryLabel(entry)}. Checked ${formatChecked(entry.saleVerifiedAt as string)}`,
-      verified: true,
-    };
+    const checked = `Checked ${formatChecked(entry.saleVerifiedAt as string)}`;
+    const list =
+      entry.priceAmount != null && entry.priceCurrency ? formatMoney(entry.priceAmount, entry.priceCurrency) : null;
+    const label = formatMoney(entry.saleAmount as number, entry.saleCurrency as string);
+    const detail = [list ? `List price ${list}.` : null, `${expiryLabel(entry)}.`, checked].filter(Boolean).join(" ");
+    return { label, detail, listLabel: list, checkedLabel: checked, verified: true };
   }
   const reached = entry.sourceCheckedAt
     ? `Official page reached ${formatChecked(entry.sourceCheckedAt)}.`
     : "No price check on file.";
-  return { label: "Price not verified", detail: reached, verified: false };
+  return { label: "Price not verified", detail: reached, listLabel: null, checkedLabel: null, verified: false };
 }
 
 export function formatMoney(amount: number, currency: string): string {

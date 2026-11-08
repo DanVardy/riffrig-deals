@@ -4,6 +4,7 @@ import { LeadmailClient, readLeadmailConfig } from "./leadmail";
 import { notPersisted } from "./runtime";
 import type { Store } from "./store/types";
 import { createUnsubscribeToken, hashToken, hashesMatch, unsubscribeSecret, verifyUnsubscribeToken } from "./tokens";
+import { parsePriceUpdate, priceFieldsFor } from "./price-update";
 import { CONSENT_TEXT, type Category, type Entry } from "./types";
 import {
   decisionSchema,
@@ -266,6 +267,46 @@ export async function unsubscribeWithToken(
   }
 }
 
+export async function updateCataloguePrice(store: Store, raw: unknown, now = Date.now()): Promise<ActionResult> {
+  const parsed = parsePriceUpdate(raw, now);
+  if (!parsed.ok) return { status: 400, body: { ok: false, error: "invalid", message: parsed.message } };
+  try {
+    const current = await store.getEntry(parsed.value.slug);
+    if (!current) return { status: 404, body: { ok: false, error: "not_found" } };
+    const written = await store.updateEntryPrice(parsed.value.slug, priceFieldsFor(current, parsed.value), parsed.value.expectedUpdatedAt);
+    if (written.status === "missing") return { status: 404, body: { ok: false, error: "not_found" } };
+    if (written.status === "conflict") return { status: 409, body: { ok: false, error: "conflict" } };
+    const saved = await store.getEntry(parsed.value.slug);
+    if (!saved) return { status: 404, body: { ok: false, error: "not_found" } };
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        entry: {
+          slug: saved.slug,
+          name: saved.name,
+          priceStatus: saved.priceStatus,
+          listAmount: saved.priceAmount,
+          listCurrency: saved.priceCurrency,
+          saleAmount: saved.saleAmount,
+          saleCurrency: saved.saleCurrency,
+          expiresAt: saved.saleExpiresAt,
+          expiryUnknown: saved.saleExpiryUnknown,
+          activeDeal: saved.activeDeal,
+          checkedAt: saved.saleVerifiedAt ?? saved.priceVerifiedAt ?? saved.sourceCheckedAt,
+          sourceUrl: saved.priceSourceUrl,
+          sourceNote: saved.sourceNote,
+          updatedAt: written.updatedAt,
+        },
+      },
+    };
+  } catch (error) {
+    const closed = unavailable(error);
+    if (closed) return closed;
+    throw error;
+  }
+}
+
 export async function decideSubmission(store: Store, raw: unknown): Promise<ActionResult> {
   const parsed = decisionSchema.safeParse(raw);
   if (!parsed.success) return { status: 400, body: { ok: false, error: "invalid" } };
@@ -294,6 +335,7 @@ export async function decideSubmission(store: Store, raw: unknown): Promise<Acti
     priceVerifiedAt: null,
     sourceCheckedAt: null,
     sourceNote: "Approved from the queue without a price check.",
+    priceSourceUrl: null,
     saleAmount: null,
     saleCurrency: null,
     saleVerifiedAt: null,

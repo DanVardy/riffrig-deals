@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { verifiedDeals } from "@/lib/filter";
-import { expiryLabel, publicPrice } from "@/lib/price";
+import { publicPrice } from "@/lib/price";
 import { getRuntime } from "@/lib/runtime";
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default async function DealsPage() {
         <ul className="deal-list">
           {deals.map((entry) => (
             <li key={entry.slug}>
-              <Link href={`/plugins/${entry.slug}`}>{entry.name} — {publicPrice(entry).label}. {expiryLabel(entry)}</Link>
+              <Link href={`/plugins/${entry.slug}`}>{entry.name}: {publicPrice(entry).label}. {publicPrice(entry).detail}</Link>
             </li>
           ))}
         </ul>

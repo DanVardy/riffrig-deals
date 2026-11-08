@@ -28,6 +28,7 @@ export type Entry = {
   priceVerifiedAt: string | null;
   sourceCheckedAt: string | null;
   sourceNote: string | null;
+  priceSourceUrl: string | null;
   saleAmount: number | null;
   saleCurrency: string | null;
   saleVerifiedAt: string | null;

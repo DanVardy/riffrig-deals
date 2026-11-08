@@ -37,7 +37,35 @@ Send `Authorization: Bearer <ADMIN_TOKEN>`. A missing token is 503. A wrong toke
 - `GET /api/admin/searches` zero-result search totals. Address-shaped queries are not stored.
 - `GET /api/admin/sponsors` sponsors, sold weeks, click totals, and the A$25 introductory offer.
 
-A verified sale is a manual database change after a person reads the vendor page: `price_status = verified_sale`, sale amount, currency, `sale_verified_at`, and either `sale_expires_at` or `sale_expiry_unknown = true`, plus `active_deal = true`. The table constraint matches that rule.
+Publish a checked price with `POST /api/admin/entries/update`. Do not edit price columns by hand. The token is `Authorization: Bearer <ADMIN_TOKEN>` and is never a query parameter. A missing or wrong token is 401 when the token is configured, and 503 when it is not. The body may only contain the fields below. Slug, id, name, and every other column are left unchanged.
+
+```json
+{
+  "slug": "example-plugin",
+  "kind": "verified_sale",
+  "currency": "EUR",
+  "saleAmount": 29.99,
+  "listAmount": 199.99,
+  "expiryUnknown": true,
+  "checkedAt": "2026-11-08T01:51:00.000Z",
+  "sourceUrl": "https://example.com/product",
+  "sourceNote": "Vendor page shows the sale and the regular price. No end date is stated.",
+  "expectedUpdatedAt": "optional, from the previous response"
+}
+```
+
+`kind` is `verified_list`, `verified_sale`, `clear_sale`, or `clear_price`.
+
+- `verified_list` requires `currency`, `listAmount`, `checkedAt`, `sourceUrl`, and `sourceNote`. It is not a sale.
+- `verified_sale` requires `currency`, `saleAmount`, `checkedAt`, `sourceUrl`, `sourceNote`, and either `expiryUnknown: true` or `expiresAt`. `listAmount` is optional and must use the same currency. The sale amount must be lower than the list amount when both are sent. A missing end date is stored as expiry unknown and shown that way.
+- `clear_sale` removes the deal. A list price already stored on the row stays a list price. Send no amounts.
+- `clear_price` removes the published price and the deal.
+
+Amounts must be finite and positive, with at most two decimal places. `currency` must be an ISO code the server allows (`USD`, `EUR`, `GBP`, `AUD`, `CAD`, `NZD`, `CHF`, `SEK`, `NOK`, `DKK`, `JPY`), not a symbol. `checkedAt` must not be in the future. `sourceNote` must describe what was on the page and must not claim a historic low. `sourceUrl` must be the public https page that was read.
+
+A 200 response is `{ "ok": true, "entry": { slug, name, priceStatus, listAmount, listCurrency, saleAmount, saleCurrency, expiresAt, expiryUnknown, activeDeal, checkedAt, sourceUrl, sourceNote, updatedAt } }`. Unknown slug is 404. A stale `expectedUpdatedAt` is 409. Malformed input is 400 with `error: "invalid"` and a short `message`.
+
+Publish one slug at a time. Save `updatedAt` and send it as `expectedUpdatedAt` if you correct that row. Run `npm run release` afterwards if you want; it inserts missing catalogue rows only and does not overwrite this update or any signup. Do not publish a price from an unchecked note, and do not send a `checkedAt` later than the moment you saw the page.
 
 ## Catalogue research, 8 Nov 2026 AWST
 

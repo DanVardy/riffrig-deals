@@ -32,12 +32,18 @@ export default async function PluginPage({ params }: { params: Promise<Params> }
       <p className="lede">{entry.vendor}. {entry.summary}</p>
       <dl className="facts">
         <div>
-          <dt>Price</dt>
+          <dt>Current price</dt>
           <dd>{price.label}</dd>
         </div>
+        {price.listLabel ? (
+          <div>
+            <dt>List price</dt>
+            <dd>{price.listLabel}</dd>
+          </div>
+        ) : null}
         <div>
-          <dt>Check</dt>
-          <dd>{price.detail}</dd>
+          <dt>Checked</dt>
+          <dd>{price.checkedLabel ?? price.detail}</dd>
         </div>
         <div>
           <dt>Sale</dt>

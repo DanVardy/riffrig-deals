@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CatalogueBrowser } from "@/components/catalogue-browser";
 import { SignupForm } from "@/components/forms";
 import { verifiedDeals } from "@/lib/filter";
-import { expiryLabel, publicPrice } from "@/lib/price";
+import { publicPrice } from "@/lib/price";
 import { getRuntime } from "@/lib/runtime";
 import { RESULT_COPY } from "@/lib/site";
 import { one, readQuery, type SearchParams } from "@/lib/page-query";
@@ -29,7 +29,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             {deals.map((entry) => (
               <li key={entry.slug}>
                 <Link href={`/plugins/${entry.slug}`}>
-                  {entry.name}: {publicPrice(entry).label}. {expiryLabel(entry)}
+                  {entry.name}: {publicPrice(entry).label}. {publicPrice(entry).detail}
                 </Link>
               </li>
             ))}
