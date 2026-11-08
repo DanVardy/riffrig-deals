@@ -151,6 +151,21 @@ textarea { min-height: 120px; }
   min-width: 0;
 }
 .card-art p { overflow-wrap: anywhere; }
+.card-art-photo {
+  display: grid;
+  padding: 0;
+  overflow: hidden;
+  background: var(--surface);
+}
+.card-art-photo img {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
+  padding: 12px;
+  box-sizing: border-box;
+}
 .card h2, .card h3 { overflow-wrap: anywhere; }
 .summary { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .status, .pill {
