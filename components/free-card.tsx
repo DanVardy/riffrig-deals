@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PluginArt } from "@/components/plugin-art";
+import { PluginDemo } from "@/components/plugin-demo";
 import { FREE_STAGE_LABELS, type FreeTool } from "@/lib/free-software";
 
 export function FreeCard({ tool }: { tool: FreeTool }) {
@@ -13,6 +14,7 @@ export function FreeCard({ tool }: { tool: FreeTool }) {
           <p>{tool.name}</p>
         </div>
       )}
+      <PluginDemo slug={tool.catalogueSlug ?? tool.slug} />
       <p className="meta">{FREE_STAGE_LABELS[tool.stage]} · {tool.vendor}</p>
       <h2>{tool.name}</h2>
       <p className="summary">{tool.summary}</p>
