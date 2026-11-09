@@ -200,6 +200,43 @@ textarea { min-height: 120px; }
   padding: 12px;
   box-sizing: border-box;
 }
+.card-demo { margin: 12px 0 0; }
+.card-demo-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0f172a;
+}
+.card-demo-frame iframe,
+.card-demo-frame button {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+}
+.card-demo-frame button {
+  cursor: pointer;
+  background: #0f172a;
+  color: #fff;
+}
+.card-demo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-demo-frame span {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--orange);
+  color: #fff;
+  font-weight: 700;
+}
 .card h2, .card h3 { overflow-wrap: anywhere; }
 .summary { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .status, .pill {

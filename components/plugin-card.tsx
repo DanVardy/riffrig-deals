@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { PluginArt } from "@/components/plugin-art";
+import { PluginDemo } from "@/components/plugin-demo";
 import { CATEGORY_LABELS } from "@/lib/types";
 import type { Entry } from "@/lib/types";
 import { expiryLabel, isVerifiedSale, publicPrice } from "@/lib/price";
@@ -25,6 +26,7 @@ export function PluginCard({ entry, returnTo }: { entry: Entry; returnTo: string
   return (
     <article className="card">
       <PluginArt slug={entry.slug} name={entry.name} vendor={entry.vendor} />
+      <PluginDemo slug={entry.slug} />
       <p className="meta">{CATEGORY_LABELS[entry.category]} · {entry.vendor}</p>
       <h2>{entry.name}</h2>
       <p className="summary">{entry.summary}</p>
